@@ -1,0 +1,60 @@
+package exo;
+
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+
+public class Server {
+
+	public static void main(String[] args) throws Exception {
+		// first param of args will be port number 
+
+		// check if port number is giver 
+		if (args.length != 1){
+			System.err.println("Usage: java " + Server.class.getName() + " port ");
+			System.exit(1);
+		}
+		DatagramSocket serverSocket = new DatagramSocket(Integer.parseInt(args[0]));
+
+		//init buffer of 1024 bytes 
+		byte[] bufferListener = new byte[1024];
+		byte[] sendData = new byte[1024];
+
+		while (true){
+
+			// init du datagram packet avec le buffer listener 
+			DatagramPacket receivePacket = new DatagramPacket(bufferListener, bufferListener.length);
+			serverSocket.receive(receivePacket);
+			// extract the data from message sent 
+			String sentence = new String( receivePacket.getData(), 0, receivePacket.getLength());
+			if(sentence.contains("serverquit")) {
+				serverSocket.close(); 
+				System.exit(0);
+			}
+			System.out.println("RECEIVED: " + sentence);
+
+			/*send back the message */
+			//get ip adress
+			InetAddress IPAddress = receivePacket.getAddress();
+
+			//get port 
+			int port = receivePacket.getPort();
+
+			//init the sentence to send back 
+			sentence = "server return : " + sentence; 
+			System.out.println(sentence );
+			sendData = sentence.getBytes();
+
+			DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+
+			serverSocket.send(sendPacket);
+
+
+		}
+
+	}
+
+}
+
