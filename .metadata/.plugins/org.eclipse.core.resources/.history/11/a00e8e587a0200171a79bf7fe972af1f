@@ -1,0 +1,47 @@
+package exo;
+
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+
+
+public class Server {
+
+	public static void main(String[] args) throws Exception {
+		// first param of args will be port number 
+
+		// check if port number is giver 
+		if (args.length != 1){
+			System.err.println("Usage: java " + Server.class.getName() + " port ");
+			System.exit(1);
+		}
+		DatagramSocket serverSocket = new DatagramSocket(Integer.parseInt(args[0]));
+
+		//init buffer of 1024 bytes 
+		byte[] bufferListener = new byte[1024];
+		byte[] sendData = new byte[1024];
+
+		while (true){
+
+			// init du datagram packet avec le buffer listener 
+			DatagramPacket Packet = new DatagramPacket(bufferListener, bufferListener.length);
+			serverSocket.receive(Packet);
+			// extract the data from message sent 
+			String sentence = new String( Packet.getData(), 0, Packet.getLength());
+			if(sentence.contains("serverquit")) {
+				serverSocket.close(); 
+				System.exit(0);
+			}
+			System.out.println("RECEIVED: " + sentence);
+
+			/*send back the message */
+			serverSocket.send(Packet);
+
+
+
+		}
+
+	}
+
+}
+
