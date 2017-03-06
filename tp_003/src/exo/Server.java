@@ -2,7 +2,6 @@ package exo;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 
 
 public class Server {
@@ -19,15 +18,14 @@ public class Server {
 
 		//init buffer of 1024 bytes 
 		byte[] bufferListener = new byte[1024];
-		byte[] sendData = new byte[1024];
 
 		while (true){
 
 			// init du datagram packet avec le buffer listener 
-			DatagramPacket receivePacket = new DatagramPacket(bufferListener, bufferListener.length);
-			serverSocket.receive(receivePacket);
+			DatagramPacket Packet = new DatagramPacket(bufferListener, bufferListener.length);
+			serverSocket.receive(Packet);
 			// extract the data from message sent 
-			String sentence = new String( receivePacket.getData(), 0, receivePacket.getLength());
+			String sentence = new String( Packet.getData(), 0, Packet.getLength());
 			if(sentence.contains("serverquit")) {
 				serverSocket.close(); 
 				System.exit(0);
@@ -35,23 +33,8 @@ public class Server {
 			System.out.println("RECEIVED: " + sentence);
 
 			/*send back the message */
-			//get ip adress
-			InetAddress IPAddress = receivePacket.getAddress();
+			serverSocket.send(Packet);
 
-			//get port 
-			int port = receivePacket.getPort();
-
-			//init the sentence to send back 
-			sentence = "server return : " + sentence; 
-			sendData = sentence.getBytes();
-
-			DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
-
-			serverSocket.send(sendPacket);
-
-			/* si on veut renvoyer juste le paquet reçu sans modification on peut directement faire 
-			 * serverSocket.send(receivePacket) apres avoir modifié l'adresse IP et le port de receivePacket 
-			 */
 
 
 		}
