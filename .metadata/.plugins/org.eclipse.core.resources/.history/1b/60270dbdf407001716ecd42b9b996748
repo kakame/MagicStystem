@@ -1,0 +1,36 @@
+package exo;
+
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Date;
+
+public class Server {
+
+
+	public static void main(String args[]) {
+		// check if port number is given 
+		if (args.length != 2){
+			System.err.println("Usage: java " + Server.class.getName() + " port timeDelay");
+			System.exit(1);
+		}
+
+		try {
+			ServerSocket server = new ServerSocket(Integer.parseInt(args[0]));
+			while (true) {
+				Socket connectionSocket = server.accept();
+				new Thread(new ClientThread(connectionSocket,Integer.parseInt(args[1]) )).start();
+			}
+		} catch (Exception ex) {
+			System.err.println("Error : " + ex.getMessage());
+		}
+	}
+}
+
+
+
+
+
+
+

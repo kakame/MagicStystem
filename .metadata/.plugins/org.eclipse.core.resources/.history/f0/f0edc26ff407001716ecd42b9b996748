@@ -1,0 +1,65 @@
+package exo;
+
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Date;
+
+public class Server {
+	static class ClientThread implements Runnable {
+		Socket client = null ; 
+		int delay ; 
+
+		public ClientThread(Socket c, int delay ) {
+			this.client = c;
+			this.delay = delay ; 
+		}
+		public void run() {
+			try {
+				System.out.println("Connected to client : "+client.getInetAddress().getHostName());
+				BufferedWriter buffout = new BufferedWriter(new OutputStreamWriter(this.client.getOutputStream()));
+
+				while (true){
+					buffout.write(new Date().toString());
+					buffout.newLine();
+					//on va essayer de flusher dans le client et si ça ne marche pas on break pour sortir de cette boucle while et on passe à l'autre 
+					try{
+						buffout.flush();
+						Thread.sleep(this.delay);
+					}catch (java.net.SocketException e){
+						break ; 
+					}
+				}
+				client.close();
+			} catch (Exception e) {
+				System.err.println(e.getMessage());
+			}
+		}
+	}
+
+	public static void main(String args[]) {
+		// check if port number is given 
+		if (args.length != 2){
+			System.err.println("Usage: java " + Server.class.getName() + " port timeDelay");
+			System.exit(1);
+		}
+
+		try {
+			ServerSocket server = new ServerSocket(Integer.parseInt(args[0]));
+			while (true) {
+				Socket connectionSocket = server.accept();
+				new Thread(new ClientThread(connectionSocket,Integer.parseInt(args[1]) )).start();
+			}
+		} catch (Exception ex) {
+			System.err.println("Error : " + ex.getMessage());
+		}
+	}
+}
+
+
+
+
+
+
+

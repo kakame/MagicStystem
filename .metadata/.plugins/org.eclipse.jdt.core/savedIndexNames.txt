@@ -1,18 +1,6 @@
 INDEX VERSION 1.129+/home/tp-home008/sadjir1/Desktop/Client_serveur/MagicStystem/.metadata/.plugins/org.eclipse.jdt.core
-3659390041.index
-2837066921.index
 2215575857.index
-3054218399.index
-2725670636.index
-1035005131.index
-3639505985.index
 1835836420.index
-2703921440.index
-386229085.index
+4077400487.index
 443258002.index
-56785722.index
-3903918061.index
-936772463.index
-4143835515.index
-1916890496.index
-1804762187.index
+1778475037.index
