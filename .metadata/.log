@@ -88,3 +88,15 @@ java.lang.NullPointerException
 	at org.eclipse.debug.core.DebugPlugin$EventNotifier.dispatch(DebugPlugin.java:1185)
 	at org.eclipse.debug.core.DebugPlugin$EventDispatchJob.run(DebugPlugin.java:441)
 	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+!SESSION Mon Mar 13 13:55:31 CET 2017 ------------------------------------------
+!ENTRY org.eclipse.equinox.launcher 4 0 2017-03-13 13:55:31.951
+!MESSAGE Could not find extension: org.eclipse.wst.jsdt.nashorn.extension
+!SESSION 2017-03-13 13:55:31.802 -----------------------------------------------
+eclipse.buildId=4.6.1.v20160915-0852
+java.version=1.8.0_111
+java.vendor=Oracle Corporation
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=fr_FR
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY org.eclipse.osgi 4 0 2017-03-13 13:55:33.225
+!MESSAGE Bundle org.eclipse.wst.jsdt.nashorn.extension not found.
