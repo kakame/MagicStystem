@@ -1,0 +1,25 @@
+package exo;
+
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+
+public class Server {
+
+	public static void main(String args[]) {
+		// check if port number is given 
+		if (args.length != 2){
+			System.err.println("Usage: java " + Server.class.getName() + " port");
+			System.exit(1);
+		}
+
+
+	}
+}
+
+
+
+
+
+
+

@@ -1,0 +1,48 @@
+package exo;
+
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.LinkedList;
+
+public class Server {
+	// id de connection 
+	private static int uniqueId ; 
+
+	//liste des clients 
+	private LinkedList al ; 
+
+	// le port 
+	private int port ; 
+
+	private boolean keepGoing ; 
+
+	public Server(String [] args){
+		// check if port number is given 
+		if (args.length != 1){
+			System.err.println("Usage: java " + Server.class.getName() + " port");
+			System.exit(1);
+		}
+		
+		//init du port 
+		this.port = Integer.parseInt(args[0]); 
+		
+		// init de la liste 
+		this.al = new LinkedList<ClientThread>() ; 
+	}
+
+
+
+
+	public static void main(String args[]) {
+
+
+
+	}
+}
+
+
+
+
+
+
+

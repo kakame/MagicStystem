@@ -1,34 +1,116 @@
 package exo;
 
-import java.io.BufferedWriter;
-import java.io.OutputStreamWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Date;
 
 class ClientThread implements Runnable {
+	Server s = null ; 
 	Socket client = null ; 
+	ObjectInputStream sInput ; 
+	ObjectOutputStream sOutput ; 
 
-	public ClientThread(Socket c ) {
+	int id ; 
+
+	String userName ; 
+
+	ChatMessage cm ; 
+
+
+	public ClientThread(Socket c , Server s) {
+		this.s = s ; 
 		this.client = c;
-	}
-	public void run() {
+		id = ++s.uniqueId ; 
 		try {
-			System.out.println("Connected to client : "+client.getInetAddress().getHostName());
-			BufferedWriter buffout = new BufferedWriter(new OutputStreamWriter(this.client.getOutputStream()));
-
-			while (true){
-				buffout.write(new Date().toString());
-				buffout.newLine();
-				//on va essayer de flusher dans le client et si ça ne marche pas on break pour sortir de cette boucle while et on passe à l'autre 
-				try{
-					buffout.flush();
-				}catch (java.net.SocketException e){
-					break ; 
-				}
-			}
-			client.close();
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
+			sOutput = new ObjectOutputStream(this.client.getOutputStream());
+			sInput  = new ObjectInputStream(this.client.getInputStream());
+		}catch (IOException e){
+			e.printStackTrace();
+			return ; 
 		}
 	}
+
+	public void start () {
+
+	}
+	public void run() {
+		// to loop until LOGOUT
+		boolean keepGoing = true;
+		while(keepGoing) {
+			// read a String (which is an object)
+			try {
+				cm = (ChatMessage) sInput.readObject();
+			}
+			catch (IOException e) {
+				break;             
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			// the messaage part of the ChatMessage
+			String message = cm.getMessage();
+
+			// Switch on the type of message receive
+			switch(cm.getType()) {
+
+			case ChatMessage.MESSAGE:
+				this.s.broadcast(userName + ": " + message);
+				break;
+			case ChatMessage.LOGOUT:
+				this.s.broadcast(userName + " disconnected with a LOGOUT message.");
+				keepGoing = false;
+				break;
+			case ChatMessage.WHOISIN:
+				// scan al the users connected
+				for(int i = 0; i < this.s.al.size(); ++i) {
+					ClientThread ct = (ClientThread) this.s.al.get(i);
+					writeMsg((i+1) + ") " + ct.userName);
+				}
+				break;
+			}
+		}
+		// remove myself from the arrayList containing the list of the
+		// connected Clients
+		this.s.remove(id);
+		close();
+	}
+
+	// try to close everything
+	private void close() {
+		// try to close the connection
+		try {
+			if(sOutput != null) sOutput.close();
+		}
+		catch(Exception e) {}
+		try {
+			if(sInput != null) sInput.close();
+		}
+		catch(Exception e) {};
+		try {
+			if(this.client != null) this.client.close();
+		}
+		catch (Exception e) {}
+	}
+
+	boolean writeMsg(String msg) {
+		// TODO Auto-generated method stub
+		// if Client is still connected send the message to it
+		if(!this.client.isConnected()) {
+			close();
+			return false;
+		}
+		// write the message to the stream
+		try {
+			sOutput.writeObject(msg);
+		}
+		// if an error occurs, do not abort just inform the user
+		catch(IOException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+
+
 }
