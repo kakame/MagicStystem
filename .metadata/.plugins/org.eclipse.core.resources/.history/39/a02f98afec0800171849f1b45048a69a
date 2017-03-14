@@ -1,0 +1,150 @@
+package exo;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.LinkedList;
+
+public class Server {
+
+	//liste des clients 
+	LinkedList<ClientThread> al ; 
+
+	// le port 
+	private int port ; 
+
+	private boolean keepGoing ; 
+
+	public Server(int port){
+		//init du port 
+		this.port = port ; 
+
+		// init de la liste 
+		this.al = new LinkedList<ClientThread>() ; 
+	}
+
+	public void start() {
+		this.keepGoing = true ; 
+		try {
+			// créer la socket et attente de connexion 
+			ServerSocket serverSocket = new ServerSocket(this.port);
+
+			while (this.keepGoing){
+				//inint la socket d'écoute 
+				Socket socket = serverSocket.accept() ; 
+
+				// init du client qui vient de se connecter à la socket 
+				ClientThread t = new ClientThread(socket, this, al.size()+1); 
+
+				//on ajoute le client à la liste 
+				al.add(t); 
+
+				//on start le client 
+				t.start() ; 
+
+				// la methode stop remet le keepGoing a false donc permet de quitter 
+				if(! this.keepGoing){
+					break  ; 
+				}
+
+			}
+
+			//ce bloc va permettre de quitter le server donc de déconnecter tous les clients connectés 
+			try {
+				serverSocket.close();
+				for(int i = 0; i < al.size(); i++) {
+					ClientThread tc =  al.get(i) ; 
+					try {						 
+						tc.sInput.close();
+
+						tc.sOutput.close();
+
+						tc.client.close();
+
+					}
+
+					catch(IOException ioE) {
+
+						// j'ai dit on sort !!!!
+
+					}
+				}
+			}catch(Exception e){
+				System.err.println(" ERROR : Exception closing the server and clients: ");
+			}
+
+		} catch (IOException e) {
+			System.err.println(" ERROR :  Exception on new ServerSocket: " ) ;
+		} 
+
+	}
+
+
+	protected void stop() {
+		keepGoing = false ; 
+
+		// connect to myself as Client to exit statement
+		// Socket socket = serverSocket.accept();
+		try {
+			new Socket("localhost", port);
+
+		}catch ( Exception e){
+
+		}	
+	}
+
+
+	synchronized void broadcast(String message, ClientThread sender) {
+		System.out.println("nombre de client connectés "+ al.size());
+		boolean stillAlive  = true ; 
+		for(int i = 0 ;  i < al.size(); i++) {
+
+			ClientThread ct =  al.get(i);
+
+			// try to write to the Client if it fails remove it from the list
+			if (!ct.equals(sender)){
+				stillAlive = ct.writeMsg(message);
+			}
+
+			if(!stillAlive) {
+				al.remove(i);
+			}
+		}
+	}
+
+	// for a client who logoff using the LOGOUT message
+	synchronized void remove(ClientThread  client) {
+		// scan the array list until we found the Id
+		for(int i = 0; i < al.size(); ++i) {	
+			ClientThread ct = al.get(i);
+			// found it
+			if(ct.equals(client)) {
+				al.remove(i);
+				this.broadcast("Disconnected Client " + ct.userName + " removed from list.", ct);
+				System.out.println("Disconnected Client " + ct.userName + " removed from list.");
+				return;
+			}
+		}
+	}
+
+
+	public static void main(String args[]) {
+
+		// check if port number is given 
+		if (args.length != 1){
+			System.err.println("Usage: java " + Server.class.getName() + " port");
+			System.exit(1);
+		}
+
+		Server server = new Server (Integer.parseInt(args[0])) ; 
+		server.start(); 
+
+	}
+}
+
+
+
+
+
+
+

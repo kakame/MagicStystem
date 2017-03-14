@@ -1,78 +1,75 @@
 package exo;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 class ClientThread implements Runnable {
 	Server s = null ; 
 	Socket client = null ; 
-	ObjectInputStream sInput ; 
-	ObjectOutputStream sOutput ; 
+	BufferedReader sInput ; 
+	BufferedWriter sOutput ; 
 
 	int id ; 
 
 	String userName ; 
 
-	ChatMessage cm ; 
-
-
-	public ClientThread(Socket c , Server s) {
+	public ClientThread(Socket c , Server s, int idd ) {
 		this.s = s ; 
 		this.client = c;
-		id = ++s.uniqueId ; 
+		id  = idd ; 
+		userName  = c.getInetAddress().getHostAddress(); 
 		try {
-			sOutput = new ObjectOutputStream(this.client.getOutputStream());
-			sInput  = new ObjectInputStream(this.client.getInputStream());
+
+			sOutput = new BufferedWriter(new OutputStreamWriter(this.client.getOutputStream()));
+			sInput  = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
+
 		}catch (IOException e){
+
+			System.err.println("ERROR : Impossible de charger le buffer de lecture/écriture ");
+			//message  for debug 
 			e.printStackTrace();
 			return ; 
+
 		}
 	}
 
-	public void start () {
-
-	}
 	public void run() {
-		// to loop until LOGOUT
-		boolean keepGoing = true;
-		while(keepGoing) {
+		String message   = "" ; 
+
+		while(true) {
+
 			// read a String (which is an object)
 			try {
-				cm = (ChatMessage) sInput.readObject();
+				message = sInput.readLine(); 
+
+				// Actually i wouldn't chat on a chatserver without any quiting possibility haha  
+				if (message != null  && message.contains("quitClient") ){
+					break ; 
+				}
+
 			}
 			catch (IOException e) {
+				System.err.println("ERROR : Impossible de lire ce que le client envoi ");
 				break;             
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 
-			// the messaage part of the ChatMessage
-			String message = cm.getMessage();
-
-			// Switch on the type of message receive
-			switch(cm.getType()) {
-
-			case ChatMessage.MESSAGE:
-				this.s.broadcast(userName + ": " + message);
-				break;
-			case ChatMessage.LOGOUT:
-				this.s.broadcast(userName + " disconnected with a LOGOUT message.");
-				keepGoing = false;
-				break;
-			case ChatMessage.WHOISIN:
-				// scan al the users connected
-				for(int i = 0; i < this.s.al.size(); ++i) {
-					ClientThread ct = (ClientThread) this.s.al.get(i);
-					writeMsg((i+1) + ") " + ct.userName);
-				}
+			// when the message is null it could be because the client disconnected via ^c for example 
+			//so we first check if the client is still here 
+			if(!this.client.isConnected() || message == null ) {
+				close();
 				break;
 			}
+
+			// send message 
+			this.s.spread(userName + ": " + message, this);
+
+
 		}
-		// remove myself from the arrayList containing the list of the
-		// connected Clients
+		// remove myself from the arrayList containing the list of the connected Clients
 		this.s.remove(id);
 		close();
 	}
@@ -103,10 +100,18 @@ class ClientThread implements Runnable {
 		}
 		// write the message to the stream
 		try {
-			sOutput.writeObject(msg);
-		}
-		// if an error occurs, do not abort just inform the user
-		catch(IOException e) {
+			sOutput.write(msg);
+			sOutput.newLine();
+			try {
+				sOutput.flush();
+			}catch (java.net.SocketException e){
+				System.err.println("ERROR : There is a problem while flushing the result");
+				close();
+				return false ; 
+			}
+		}catch(IOException e) {
+			System.err.println("ERROR : There is a problem, the message has not been sent");
+			//for debug
 			e.printStackTrace();
 		}
 		return true;
