@@ -21,7 +21,7 @@ class ClientThread implements Runnable {
 		this.s = s ; 
 		this.client = c;
 		id  = idd ; 
-		userName  = c.getInetAddress().getHostName(); 
+		userName  = c.getInetAddress().getHostAddress(); 
 		try {
 
 			sOutput = new BufferedWriter(new OutputStreamWriter(this.client.getOutputStream()));
