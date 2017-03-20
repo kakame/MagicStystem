@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Server {
 
 	//liste des clients 
-	LinkedList<ClientThread> al ; 
+	// convention de code trop spécifique de déclarer une linkedList il faut mieux décalrer List uniquement ensuite new linkedlist<type>(); 
+	//code générique 
+	List<ClientThread> al ; 
 
 	// le port 
 	private int port ; 
@@ -40,7 +43,10 @@ public class Server {
 				Thread tt = new Thread (t);
 
 				//add client to list  
-				al.add(t); 
+				// entourer du sychronized car il faut le faire pour la liste (lecture parcours et ecriture) 
+				synchronized (al){
+					al.add(t); 
+				}
 
 				// starting the thread 
 				tt.start() ; 
