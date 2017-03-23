@@ -1,6 +1,5 @@
 package exo;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -13,28 +12,11 @@ public class HttpServer {
 		this.port = port ; 
 	}
 
-	// reading the header from a buffer then getting the first line
-	// splitting the first line, control in order to have only GET method &
-	public String httpRequestHandler(BufferedReader buffer_req){
-		try {
-			String request = buffer_req.readLine();
-			String[]param_request = request.split(""); 
-			if(param_request[0].contains("GET") && param_request[3].contains("HTTP/1.0")){
-				return param_request[2];
-			}
-			else{
-				// we will send an error 404
-				return "ERROR on request.";
-			}
-		} catch (IOException e) {
-			System.out.println("ERROR: Reader on the BufferedReader");
-			return null;
-		}
-	}
 
 
-	public static String constructHttpHeader(int returnCode,int contentLength,String fileType) {
-		String s = "HTTP/1.0 ";
+
+	public static String constructHttpHeader(int returnCode,long contentLength,String fileType) {
+		String s = "HTTP/1.1 ";
 
 		switch (returnCode) {
 		case 200:
@@ -48,7 +30,7 @@ public class HttpServer {
 		s = s + "\r\n"; 
 		s = s + "Connection: close\r\n";
 		s = s + "Server: MagicSystemServer \r\n"; 
-		s = s + "Content-Length:"+contentLength;  
+		s = s + "Content-Length:"+contentLength+"\r\n";  
 		switch (fileType) {
 		case "JPEG":
 			s = s + "Content-Type: image/jpeg\r\n";
@@ -78,11 +60,12 @@ public class HttpServer {
 		try {
 			// server socket 
 			ServerSocket serverSocket = new ServerSocket(this.port);
+			System.out.println("créer");
 
 			while (true){
 				//inint listening socket 
 				Socket socket = serverSocket.accept() ; 
-
+				System.out.println("accepter");
 				// init who has just connected 
 				ClientThread t = new ClientThread(socket); 
 				Thread tt = new Thread (t);
