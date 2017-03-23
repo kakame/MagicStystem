@@ -32,16 +32,19 @@ public class HttpServer {
 		s = s + "Server: MagicSystemServer \r\n"; 
 		s = s + "Content-Length:"+contentLength+"\r\n";  
 		switch (fileType) {
-		case "JPEG":
+		case "jpeg":
 			s = s + "Content-Type: image/jpeg\r\n";
 			break;
-		case "HTML":
+		case "jpg":
+			s = s + "Content-Type: image/jpeg\r\n";
+			break;
+		case "html":
 			s = s + "Content-Type: text/html; charset=UTF-8\r\n";
 			break;
-		case "CSS":
+		case "css":
 			s = s + "Content-Type: text/css\r\n";
 			break;
-		case "JS":
+		case "js":
 			s = s + "Content-Type: application/javascript\r\n";
 			break;
 		default:

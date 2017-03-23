@@ -12,7 +12,7 @@ public class ClientThread implements Runnable {
 	protected BufferedReader input = null;
 	protected DataOutputStream output = null;
 	protected String ext = "HTML";
-	private final String rootPath = "/public";
+	private final String rootPath = "/home/tp-home006/nchiout";
 
 	public ClientThread(Socket s ){
 		this.socket = s;
@@ -31,7 +31,7 @@ public class ClientThread implements Runnable {
 
 			}
 		} catch (IOException e) {
-			System.out.println("ERROR: Reader on the BufferedReader");
+			e.printStackTrace();
 
 		}
 	}
@@ -56,7 +56,11 @@ public class ClientThread implements Runnable {
 		String[] pathTab = path.split("/");	
 		
 		String file = pathTab[pathTab.length-1];
-		String[] fileTab = file.split(".");
+		System.out.println(file);
+		String[] fileTab = file.split("\\.");
+		System.out.println(fileTab.length);
+		
+		System.out.println(file);
 		if(fileTab.length==0){
 			ext = "HTML";
 		}
@@ -66,7 +70,7 @@ public class ClientThread implements Runnable {
 		System.out.println(path);
 		File f = new File(path);
 		if(f.exists() && !f.isDirectory()) { 
-			FileInputStream fis = new FileInputStream(file);
+			FileInputStream fis = new FileInputStream(f);
 			output.writeUTF(HttpServer.constructHttpHeader(200, f.length(), ext));
 			while (true) {
 				// Le fichier est lu ligne par ligne
