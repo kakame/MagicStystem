@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+
 public class HttpServer {
 
 	private int port ; 
@@ -14,9 +15,15 @@ public class HttpServer {
 
 
 
-
+	
+	/**
+	 * @param returnCode HTTP Return code we handle only 200 & 404
+	 * @param contentLength length of the content that we'll send
+	 * @param fileType // extension to define MIME type of the content, we handled some type ...
+	 * @return Http header 
+	 */
 	public static String constructHttpHeader(int returnCode,long contentLength,String fileType) {
-		String s = "HTTP/1.1 ";
+		String s = "HTTP/1.0 ";
 
 		switch (returnCode) {
 		case 200:
@@ -26,7 +33,7 @@ public class HttpServer {
 			s = s + "404 Not Found";
 			break;
 		}
-
+		
 		s = s + "\r\n"; 
 		s = s + "Connection: close\r\n";
 		s = s + "Server: MagicSystemServer \r\n"; 
@@ -48,7 +55,7 @@ public class HttpServer {
 			s = s + "Content-Type: application/javascript\r\n";
 			break;
 		default:
-			s = s + "Content-Type: text/html; charset=UTF-8\r\n";
+			s = s + "Content-Type: text/plain; charset=UTF-8\r\n";
 			break;
 		}
 
@@ -59,6 +66,9 @@ public class HttpServer {
 
 
 
+	/**
+	 * 
+	 */
 	public void start () {
 		try {
 			// server socket 
@@ -83,7 +93,7 @@ public class HttpServer {
 
 
 	public static void main(String args[]) {
-
+		
 		// check if port number is given 
 		if (args.length != 1){
 			System.err.println("Usage: java " + HttpServer.class.getName() + " port");
