@@ -73,12 +73,12 @@ public class HttpServer {
 		try {
 			// server socket 
 			ServerSocket serverSocket = new ServerSocket(this.port);
-			System.out.println("créer");
+	
 
 			while (true){
 				//inint listening socket 
 				Socket socket = serverSocket.accept() ; 
-				System.out.println("accepter");
+			
 				// init who has just connected 
 				ClientThread t = new ClientThread(socket); 
 				Thread tt = new Thread (t);

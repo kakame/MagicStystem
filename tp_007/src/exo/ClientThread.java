@@ -13,12 +13,12 @@ public class ClientThread implements Runnable {
 	protected DataOutputStream output = null;
 	// extension to define MIME type
 	protected String ext = "HTML";
-	private final String rootPath = "/var/www";
+	private final String rootPath = "/";
 
 	public ClientThread(Socket s ){
 		this.socket = s;
 	}
-	
+
 	/**
 	 *  reading the header from a buffer then getting the first line
 	 * splitting the first line, control in order to have only GET method
@@ -26,30 +26,39 @@ public class ClientThread implements Runnable {
 	 */
 	public void httpRequestHandler(BufferedReader buffer_req){
 		try {
-			
+
 			String request = buffer_req.readLine(); //first line is the HTTP REQUEST
 			String pressEnter = buffer_req.readLine(); // line 2 of the buffer in order to verify if  there is an enter press
 			// i used null in fact it must be strict and we need a press enter
 			if(pressEnter != null){
 				// splitting the request, getting a string array " GET PATH HTTP/VERSION " 
 				String[]param_request = request.split(" "); 
+				if(param_request.length != 3) {
+					fileNotFoundHandler("Reques must be GET PATH HTTP/1.0 \n");
+					System.out.println("Request with bad arguments");
+
+				}
 				// We check if it's a GET request, and HTTP version, here it can be 1.0 or 1.1 , in order to test with webBrower 	
-				if(param_request[0].contains("GET") && (param_request[2].contains("HTTP/1.0") || param_request[2].contains("HTTP/1.1"))	){
-					// calling the method handlePath
-					handlePath(param_request[1]);
+				else{	
+					if(param_request[0].contains("GET") && (param_request[2].contains("HTTP/1.0") || param_request[2].contains("HTTP/1.1"))	){
+						// calling the method handlePath
+						handlePath(param_request[1]);
+					}
+					else{
+						fileNotFoundHandler("Request must be GET PATH HTTP/1.0 \n");
+					}
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Buffered reader error");
 
 		}
 	}
 	// handle the case where the file does not exist
-	public void fileNotFoundHandler() {
+	public void fileNotFoundHandler(String errMessage) {
 		try {
 
 			// sending error 404
-			String errMessage = "ERROR 404 FILE NOT FOUND \n";
 			output.writeBytes(HttpServer.constructHttpHeader(404,errMessage.length(), "html"));
 			output.writeBytes(errMessage);
 			output.flush();
@@ -57,7 +66,7 @@ public class ClientThread implements Runnable {
 			System.err.println("Error with the path "+ e.getMessage());
 		}
 	}
-	
+
 	// main function of the server, it handles the path
 	public void handlePath(String path) throws IOException{
 
@@ -95,7 +104,7 @@ public class ClientThread implements Runnable {
 		}
 		else{
 			// case where the file is not found
-			fileNotFoundHandler();
+			fileNotFoundHandler("ERROR 404 FILE NOT FOUND \n");
 		}
 
 
