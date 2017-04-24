@@ -1,0 +1,14 @@
+package exo;
+
+public class Server {
+	public static void main(String args[]) {
+
+		// check if port number is given 
+		if (args.length != 1){
+			System.err.println("Usage: java " + Server.class.getName() + " nshost nsport name");
+			System.exit(1);
+		}
+
+
+	}
+}

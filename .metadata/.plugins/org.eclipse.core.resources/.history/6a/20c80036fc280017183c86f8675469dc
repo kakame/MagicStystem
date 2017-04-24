@@ -1,0 +1,42 @@
+package exo;
+
+import java.awt.List;
+import java.rmi.RemoteException;
+import java.util.LinkedList;
+
+
+public class Chat implements RemoteChat {
+	private String name ; 
+	private LinkedList<RemoteClient> clients; 
+
+	Chat (String name){
+		this.name = name ; 
+		this.clients = new LinkedList<RemoteClient>() ; 
+	}
+
+
+	@Override
+	public String getName() throws RemoteException {
+		return this.name;
+	}
+
+	@Override
+	public void send(String message) throws RemoteException {
+		synchronized (clients){
+			for (RemoteClient t : clients){
+				t.newMessage(message);
+			}
+		}
+	}
+
+	@Override
+	public void addClient(RemoteClient t) throws RemoteException {
+		this.clients.add(t);
+	}
+
+	@Override
+	public void removeClient(RemoteClient t) throws RemoteException {
+		this.clients.remove(t);
+	}
+
+}

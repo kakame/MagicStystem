@@ -1,0 +1,11 @@
+package exo;
+
+public class Client implements RemoteClient {
+
+	@Override
+	public void newMessage(String message) {
+		System.out.println (message); 
+		
+	}
+
+}

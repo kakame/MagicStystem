@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename type &apos;exo.RmiChat&apos; to &apos;RemoteChat&apos;&#x0A;- Original project: &apos;ChatRmi&apos;&#x0A;- Original element: &apos;exo.RmiChat&apos;&#x0A;- Renamed element: &apos;exo.RemoteChat&apos;&#x0A;- Update references to refactored element&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;RmiChat&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src&lt;exo{RmiChat.java[RmiChat" matchStrategy="1" name="RemoteChat" qualified="false" references="true" similarDeclarations="false" stamp="1493042058125" textual="false" version="1.0"/>
+</session>

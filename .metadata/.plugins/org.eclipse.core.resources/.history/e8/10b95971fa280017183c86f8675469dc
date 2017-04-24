@@ -1,0 +1,35 @@
+package exo;
+
+import java.rmi.RemoteException;
+
+
+public class Chat implements RemoteChat {
+	private String name ; 
+	private RemoteChat client = null ; 
+
+	Chat (String name){
+		this.name = name ; 
+	}
+
+
+	@Override
+	synchronized public String getName() throws RemoteException {
+		return this.name;
+	}
+
+	@Override
+	synchronized public void send(String message) throws RemoteException {
+		System.out.println(message);
+	}
+
+	@Override
+	synchronized public void setClient(RemoteChat c) throws RemoteException {
+		this.client = c ; 
+	}
+
+	@Override
+	synchronized public RemoteChat getClient() throws RemoteException {
+		return this.client;
+	}
+
+}

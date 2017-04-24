@@ -1,0 +1,12 @@
+package exo;
+
+import java.rmi.RemoteException;
+
+public class Server implements RemoteHelloWorld {
+
+	@Override
+	public String getString() throws RemoteException {
+		return "hello world";
+	}
+
+}

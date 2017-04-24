@@ -1,0 +1,10 @@
+package exo;
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface RemoteChat extends Remote {
+	 void spread (String message, Client sender) throws RemoteException;
+	 void remove(int  id) throws RemoteException ; 
+	 void start() throws RemoteException ; 
+}

@@ -1,0 +1,25 @@
+package exo;
+
+import java.rmi.RemoteException;
+
+public class Client implements RemoteClient {
+
+	@Override
+	public void newMessage(String message) {
+		System.out.println (message); 
+		
+	}
+	
+	public static void main(String args[]) throws RemoteException {
+		
+		if (args.length != 3){
+			System.err.println("Usage: java " + Server.class.getName() + " nshost nsport name");
+			System.exit(1);
+		}
+		
+		
+		
+	}
+
+
+}

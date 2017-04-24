@@ -1,0 +1,73 @@
+package exo;
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
+import java.util.Scanner;
+
+public class Server implements RemoteChat{
+	private String name ; 
+	private RemoteChat client = null ; 
+
+	Server (String name){
+		this.name = name ; 
+	}
+
+
+	@Override
+	public String getName() throws RemoteException {
+		return this.name;
+	}
+
+	@Override
+	public void send(String message) throws RemoteException {
+		System.out.println(message);
+	}
+
+	@Override
+	public void setClient(RemoteChat c) throws RemoteException {
+		this.client = c ; 
+	}
+
+	@Override
+	public RemoteChat getClient() throws RemoteException {
+		return this.client;
+	}
+
+
+	public static void main(String args[]) throws RemoteException {
+
+		// check if port number is given 
+		if (args.length != 1){
+			System.err.println("Usage: java " + Server.class.getName() + " nshost nsport name");
+			System.exit(1);
+		}
+
+		System.out.println("Enter username : ");
+		Scanner s = new Scanner (System.in); 
+
+		RemoteChat server = new Server(s.nextLine().trim()); 
+
+		Remote stub = UnicastRemoteObject.exportObject(server, 0); 
+		final Registry registry = LocateRegistry.getRegistry(args[0], Integer.parseInt(args[1])); 
+		registry.rebind(args[2], stub);
+		System.out.println("Ready !");
+		
+		while (true){
+			String msg = s.nextLine().trim() ; 
+			if (server.getClient() != null ){
+				RemoteChat client = server.getClient() ;
+				msg = "["+server.getName()+"]" +msg ; 
+				client.send(msg);
+			}
+		}
+
+
+	}
+
+}
+
+//pour lancer le registry il faut le lancer avec le usebasecodeonly = false 

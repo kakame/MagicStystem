@@ -1,0 +1,11 @@
+package exo;
+
+import java.rmi.RemoteException;
+
+public class Client {
+	public static void main (String args []) throws RemoteException{
+		//Usage 
+		RemoteHelloWorld test = new Server () ; 
+		System.out.println (test.getString()); 
+	}
+}

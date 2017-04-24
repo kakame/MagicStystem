@@ -1,0 +1,10 @@
+package exo;
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+
+public interface RemoteHelloWorld extends Remote{
+	public String getString () throws RemoteException ; 
+	
+}

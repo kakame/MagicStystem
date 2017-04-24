@@ -7,5 +7,6 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="exo.HttpServer"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="8080"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="tp_007"/>
 </launchConfiguration>
